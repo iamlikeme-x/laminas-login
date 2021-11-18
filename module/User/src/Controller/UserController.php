@@ -122,10 +122,10 @@ class UserController extends AbstractActionController
         $request = $this->getRequest();
 
         if ($request->isPost()) {
-            $del = $request->getPost('confirm', 'No');
+            $del = $request->getPost('delete', 'No');
 
             if ($del === 'Yes') {
-                $this->table->deleteUser($user->id);
+                $this->table->deleteUser($user);
             }
 
             return $this->redirect()->toRoute('users', ['action' => 'index']);

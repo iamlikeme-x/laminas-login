@@ -115,7 +115,7 @@ class User implements InputFilterAwareInterface
 
     public static function getField(string $field): array
     {
-        $fields = $this::getFields();
+        $fields = self::getFields();
         
         if (!isset($fields[$field])) {
             throw new RuntimeException("Could not find field '$field'");
