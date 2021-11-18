@@ -5,6 +5,7 @@ namespace User\Model;
 use Laminas\InputFilter\InputFilterAwareInterface;
 
 use DomainException;
+use Laminas\Crypt\Password\BcryptSha;
 use Laminas\InputFilter\InputFilter;
 use Laminas\InputFilter\InputFilterInterface;
 use Laminas\Loader\Exception\RuntimeException;
@@ -32,15 +33,53 @@ class User implements InputFilterAwareInterface
     protected $inputFilter;
 
     /**
+     * @var BcryptSha
+     */
+    protected $crypt;
+
+    /**
      * @var array
      */
     protected static $fields;
 
+    public function __construct()
+    {
+        $this->crypt = new BcryptSha();
+    }
+
     public function exchangeArray(array $data): void
     {
-        $this->id = $data['id'] ?? null;
-        $this->username = $data['username'] ?? null;
-        $this->passwd = $data['passwd'] ?? null;
+        $fieldsArr = $this::getFields();
+
+        foreach ($fieldsArr as $fieldArr) {
+            $field = $fieldArr['name'];
+
+            if (!isset($data[$field])) {
+                continue;
+            }
+            
+            switch ($field) {
+                case 'passwd':
+                    $this->$field = $this->crypt->create($data[$field]);
+                    break;
+                default:
+                    $this->$field =  $data[$field];
+            }
+        }
+    }
+
+    public function getArrayCopy(): array
+    {
+        $fieldsArr = $this::getFields();
+
+        $data = [];
+
+        foreach ($fieldsArr as $fieldArr) {
+            $field = $fieldArr['name'];
+            $data[$field] = $this->$field;
+        }
+
+        return $data;
     }
 
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -55,7 +94,7 @@ class User implements InputFilterAwareInterface
     {
         if (!isset($this->inputFilter)) {    
             $inputFilter = new InputFilter();
-            $fields = self::getFields();
+            $fields = $this::getFields();
 
             foreach ($fields as $field) {
                 $filterArr = [
@@ -76,7 +115,7 @@ class User implements InputFilterAwareInterface
 
     public static function getField(string $field): array
     {
-        $fields = self::getFields();
+        $fields = $this::getFields();
         
         if (!isset($fields[$field])) {
             throw new RuntimeException("Could not find field '$field'");

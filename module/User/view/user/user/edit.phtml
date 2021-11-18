@@ -1,0 +1,46 @@
+<?php
+
+$title = 'Edit user';
+$this->headTitle($title);
+
+?>
+<h1><?= $this->escapeHtml($title) ?></h1>
+<?php
+
+$username = $form->get('username');
+$username->setAttribute('class', 'form-control');
+$username->setAttribute('placeholder', 'username');
+
+$passwd = $form->get('passwd');
+$passwd->setAttribute('class', 'form-control');
+$passwd->setAttribute('placeholder', 'password');
+
+$submit = $form->get('submit');
+$submit->setAttribute('class', 'btn btn-success');
+
+$form->setAttribute('action', $this->url('users', [
+    'action' => 'edit',
+    'id'     => $id,
+]));
+$form->prepare();
+
+echo $this->form()->openTag($form);
+
+?>
+<div class="form-group">
+    <?= $this->formLabel($username) ?>
+    <?= $this->formElement($username) ?>
+    <?= $this->formElementErrors()->render($username, ['class' => 'help-block']) ?>
+</div>
+
+<div class="form-group">
+    <?= $this->formLabel($passwd) ?>
+    <?= $this->formElement($passwd) ?>
+    <?= $this->formElementErrors()->render($passwd, ['class' => 'help-block']) ?>
+</div>
+
+<?php
+
+echo $this->formSubmit($submit);
+echo $this->formHidden($form->get('id'));
+echo $this->form()->closeTag();

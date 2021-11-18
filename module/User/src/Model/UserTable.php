@@ -60,8 +60,8 @@ class UserTable
         $this->tableGateway->update($data, ['id' => $id]);
     }
 
-    public function deleteUser($id)
+    public function deleteUser(User $user)
     {
-        $this->tableGateway->delete(['id' => (int) $id]);
+        $this->tableGateway->delete(['id' => (int) $user->id]);
     }
 }

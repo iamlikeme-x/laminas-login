@@ -27,7 +27,7 @@ class UserForm extends Form
 
     public function __construct($name = null)
     {
-        parent::__construct("user");
+        parent::__construct($name ?? "user");
 
         foreach (self::FIELDS as $field) {
             if (is_string($field)) {
